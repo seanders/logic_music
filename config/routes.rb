@@ -3,5 +3,6 @@ Rails.application.routes.draw do
   namespace :api do
     resources :artists, only: [:index, :show]
     resources :albums
+    post 'search' => 'search#search'
   end
 end
