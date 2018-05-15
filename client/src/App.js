@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import './App.css';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 import { getArtists, getAlbums } from './services/musicClient';
 import ArtistList from './ArtistList';
 import AlbumsList from './AlbumsList';
+import UpsertAlbumDialog from './UpsertAlbumDialog';
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      showAlbumUpsertModal: false,
       artists: [],
       selectedArtistId: null,
-      albums: []
+      selectedAlbumId: null,
+      albums: {}
     };
   }
 
@@ -21,7 +26,7 @@ class App extends Component {
 
     this.setState({
       artists,
-      albums,
+      albums: albums.reduce((result, album) => ({...result, [album.id]: album}), {}),
       selectedArtistId: artists[0] && artists[0].id,
     })
   }
@@ -30,25 +35,54 @@ class App extends Component {
     this.hydrateData();
   }
 
-  onArtistClick(selectedArtistId) {
-    this.setState({ selectedArtistId })
+  closeModal() {
+    this.setState({ showAlbumUpsertModal: false });
+  }
+
+  onAddAlbumClick = () => {
+    this.setState({ showAlbumUpsertModal: true });
+  }
+
+  onArtistClick = (selectedArtistId) => {
+    this.setState({ selectedArtistId });
+  }
+
+  selectAlbumToEdit = (albumId) => {
+    this.setState({ selectedAlbumId: albumId, showAlbumUpsertModal: true });
+  }
+
+  saveAlbum = (album) => {
+    this.setState((prevState) => ({
+      albums: { ...prevState.albums, [album.id]: album }
+    }))
   }
 
   render() {
-    const { artists, selectedArtistId, albums } = this.state;
+    const { artists, selectedArtistId, albums, showAlbumUpsertModal, selectedAlbumId } = this.state;
 
-    const albumsForSelectedArtist = albums.filter(album => album.artist_id === selectedArtistId);
+    const albumsForSelectedArtist = Object.values(albums).filter(album => album.artist_id === selectedArtistId);
 
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Greg's hipster album paradise.</h1>
+          <Button variant="raised" color="primary" onClick={this.onAddAlbumClick}>
+            Add Album
+            <AddIcon />
+          </Button>
         </header>
         <div style={{ display: 'flex' }}>
           <div style={{ flexBasis: 460 }}>
-            <ArtistList artists={artists} selectedArtistId={selectedArtistId} onArtistClick={this.onArtistClick.bind(this)}/>
+            <ArtistList artists={artists} selectedArtistId={selectedArtistId} onArtistClick={this.onArtistClick}/>
           </div>
-          <AlbumsList albums={albumsForSelectedArtist} />
+          <AlbumsList albums={albumsForSelectedArtist} onAlbumEdit={this.selectAlbumToEdit} />
+          <UpsertAlbumDialog
+            album={albums[selectedAlbumId] ? {...albums[selectedAlbumId]} : null}
+            artists={artists}
+            open={showAlbumUpsertModal}
+            handleClose={this.closeModal.bind(this)}
+            onSave={this.saveAlbum}
+          />
         </div>
       </div>
     );

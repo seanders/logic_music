@@ -12,10 +12,13 @@ import EditIcon from '@material-ui/icons/Edit';
 
 export default class AlbumsList extends Component {
   static propTypes = {
-    albums: PropTypes.array
+    albums: PropTypes.array.isRequired,
+    onAlbumEdit: PropTypes.func.isRequired,
   }
 
-  renderRow({ id, title, year, condition}) {
+  renderRow = ({ id, title, year, condition}) => {
+    const { onAlbumEdit } = this.props;
+
     return (
       <TableRow key={id}>
         <TableCell>
@@ -27,7 +30,7 @@ export default class AlbumsList extends Component {
             <div>{condition}</div>
             <div>
               <IconButton>
-                <EditIcon />
+                <EditIcon onClick={() => onAlbumEdit(id)} />
               </IconButton>
               <IconButton>
                 <DeleteIcon />
