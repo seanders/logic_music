@@ -15,13 +15,14 @@ export default class AlbumsList extends Component {
     albums: PropTypes.array.isRequired,
     onAlbumEdit: PropTypes.func.isRequired,
     onAlbumDestroy: PropTypes.func.isRequired,
+    highlightedYear: PropTypes.number,
   }
 
   renderRow = ({ id, title, year, condition}) => {
-    const { onAlbumEdit, onAlbumDestroy } = this.props;
+    const { onAlbumEdit, onAlbumDestroy, highlightedYear } = this.props;
 
     return (
-      <TableRow key={id}>
+      <TableRow key={id} selected={parseInt(highlightedYear, 10) === year}>
         <TableCell>
           {title}
         </TableCell>
@@ -47,16 +48,18 @@ export default class AlbumsList extends Component {
     const { albums } = this.props;
 
     return (
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>Year</TableCell>
-            <TableCell>Condition</TableCell>
-          </TableRow>
-          {albums.map(this.renderRow)}
-        </TableHead>
-      </Table>
+      <Paper>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Title</TableCell>
+              <TableCell>Year</TableCell>
+              <TableCell>Condition</TableCell>
+            </TableRow>
+            {albums.map(this.renderRow)}
+          </TableHead>
+        </Table>
+      </Paper>
     );
   }
 }

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import musicClient from './services/musicClient';
 import ArtistList from './ArtistList';
 import AlbumsList from './AlbumsList';
 import UpsertAlbumDialog from './UpsertAlbumDialog';
+import ArtistProlificnessChart from './ArtistProlificnessChart';
 
 class App extends Component {
   constructor(props) {
@@ -16,7 +18,8 @@ class App extends Component {
       artists: [],
       selectedArtistId: null,
       selectedAlbumId: null,
-      albums: {}
+      albums: {},
+      highlightedYear: null,
     };
   }
 
@@ -53,7 +56,7 @@ class App extends Component {
   }
 
   onArtistClick = (selectedArtistId) => {
-    this.setState({ selectedArtistId });
+    this.setState({ selectedArtistId, highlightedYear: null });
   }
 
   selectAlbumToEdit = (albumId) => {
@@ -66,7 +69,7 @@ class App extends Component {
 
     if (response.success) {
       this.setState((prevState) => ({
-        albums: { ...prevState.albums, [album.id]: album }
+        albums: { ...prevState.albums, [album.id]: album },
       }));
     }
 
@@ -84,10 +87,16 @@ class App extends Component {
         }
       })
     }
-  };
+  }
+
+  handleBarClick = ({ year }) => {
+    this.setState({
+      highlightedYear: year,
+    });
+  }
 
   render() {
-    const { artists, selectedArtistId, albums, showAlbumUpsertModal, selectedAlbumId } = this.state;
+    const { artists, selectedArtistId, albums, showAlbumUpsertModal, selectedAlbumId, highlightedYear } = this.state;
 
     const albumsForSelectedArtist = Object.values(albums).filter(album => album.artistId === selectedArtistId);
 
@@ -101,10 +110,18 @@ class App extends Component {
           </Button>
         </header>
         <div style={{ display: 'flex' }}>
-          <div style={{ flexBasis: 460 }}>
+          <div style={{ width: '20%' }}>
             <ArtistList artists={artists} selectedArtistId={selectedArtistId} onArtistClick={this.onArtistClick}/>
           </div>
-          <AlbumsList albums={albumsForSelectedArtist} onAlbumEdit={this.selectAlbumToEdit} onAlbumDestroy={this.destroyAlbum}/>
+          <div style={{ width: '60%'}}>
+            <AlbumsList albums={albumsForSelectedArtist} onAlbumEdit={this.selectAlbumToEdit} onAlbumDestroy={this.destroyAlbum} highlightedYear={highlightedYear} />
+          </div>
+          <div style={{ width: '30%' }}>
+            <Typography variant="headline" gutterBottom>
+              Prolificness
+            </Typography>
+            <ArtistProlificnessChart artistId={selectedArtistId} albums={albumsForSelectedArtist} onBarClick={this.handleBarClick} />
+          </div>
           <UpsertAlbumDialog
             album={albums[selectedAlbumId] ? {...albums[selectedAlbumId]} : null}
             artists={artists}
