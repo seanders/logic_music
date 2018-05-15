@@ -14,10 +14,11 @@ export default class AlbumsList extends Component {
   static propTypes = {
     albums: PropTypes.array.isRequired,
     onAlbumEdit: PropTypes.func.isRequired,
+    onAlbumDestroy: PropTypes.func.isRequired,
   }
 
   renderRow = ({ id, title, year, condition}) => {
-    const { onAlbumEdit } = this.props;
+    const { onAlbumEdit, onAlbumDestroy } = this.props;
 
     return (
       <TableRow key={id}>
@@ -33,7 +34,7 @@ export default class AlbumsList extends Component {
                 <EditIcon onClick={() => onAlbumEdit(id)} />
               </IconButton>
               <IconButton>
-                <DeleteIcon />
+                <DeleteIcon onClick={() => onAlbumDestroy(id)}/>
               </IconButton>
             </div>
           </div>

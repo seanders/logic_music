@@ -29,7 +29,7 @@ const FormHelpLink = withStyles(styles)(({ children, classes, onClick }) => {
   return (<Button classes={{ root: classes.buttonLink }} color="primary" size="small" onClick={onClick}>{children}</Button>)
 })
 
-const newAlbum = { title: '', year: '', condition: 'excellent', artist_id: '' }
+const newAlbum = { title: '', year: '', condition: 'excellent', artistId: '' }
 
 export class UpsertAlbumDialog extends Component {
   static conditionOptions = [ 'excellent', 'ok', 'bad' ];
@@ -70,13 +70,22 @@ export class UpsertAlbumDialog extends Component {
     this.resetForm();
   }
 
-  handleSave = () => {
-    const { onSave, handleClose } = this.props;
-    const { album } = this.state;
+  handleSave = async (event) => {
+    // Stop default browser save action
+    event.preventDefault();
 
-    onSave(album);
-    handleClose();
-    this.resetForm();
+    const { onSave, handleClose } = this.props;
+    const { album, newArtistName, createNewArtist } = this.state;
+
+    const response = await onSave({...album, newArtistName, createNewArtist });
+
+    if (response.success) {
+      handleClose();
+      this.resetForm();
+    } else {
+      // TODO: Show an error state to the user using a Snackbar
+      console.error('Failed to save the album!')
+    }
   }
 
   handleCreateNewArtist = () => {
@@ -111,7 +120,7 @@ export class UpsertAlbumDialog extends Component {
   handleArtistChange = (event) => {
     event.persist();
     this.setState((prevState) => ({
-      album: { ...prevState.album, artist_id: event.target.value }
+      album: { ...prevState.album, artistId: event.target.value }
     }));
   }
 
@@ -122,7 +131,7 @@ export class UpsertAlbumDialog extends Component {
 
   render() {
     const { open, album: albumProp, artists, classes } = this.props;
-    const { album: { title, year, condition, artist_id }, createNewArtist, newArtistName } = this.state;
+    const { album: { title, year, condition, artistId }, createNewArtist, newArtistName } = this.state;
 
     return (
       <Dialog
@@ -131,89 +140,89 @@ export class UpsertAlbumDialog extends Component {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title">{albumProp ? 'Update' : 'Create'} Album</DialogTitle>
-        <DialogContent>
-          <form>
-            <TextField
-              autoFocus
-              value={title}
-              onChange={this.handleTitleChange}
-              margin="dense"
-              id="name"
-              label="Album Title"
-              type="text"
-              fullWidth
-            />
-            <TextField
-              value={year}
-              onChange={this.handleYearChange}
-              margin="dense"
-              id="name"
-              label="Year"
-              type="number"
-              fullWidth
-            />
+        <form onSubmit={this.handleSave}>
+          <DialogContent>
+              <TextField
+                autoFocus
+                value={title}
+                onChange={this.handleTitleChange}
+                margin="dense"
+                id="name"
+                label="Album Title"
+                type="text"
+                fullWidth
+              />
+              <TextField
+                value={year}
+                onChange={this.handleYearChange}
+                margin="dense"
+                id="name"
+                label="Year"
+                type="number"
+                fullWidth
+              />
 
-            { !createNewArtist && (
-              <FormControl className={classes.selectField} aria-describedby="name-helper-text" fullWidth>
-                <InputLabel htmlFor="artist_id">Artist</InputLabel>
-                <Select
-                  value={artist_id || ''}
-                  onChange={this.handleArtistChange}
-                  inputProps={{
-                    id: 'artist_id',
-                    name: 'artist_id',
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {artists.map(({ id, name }) => <MenuItem key={id} value={id}>{name}</MenuItem>)}
-                </Select>
-                <FormHelperText component={FormHelpLink} id="name-helper-text" onClick={this.handleCreateNewArtist}>
-                  Create a new artist
-                </FormHelperText>
-              </FormControl>
-            )}
+              { !createNewArtist && (
+                <FormControl className={classes.selectField} aria-describedby="name-helper-text" fullWidth>
+                  <InputLabel htmlFor="artistId">Artist</InputLabel>
+                  <Select
+                    value={artistId || ''}
+                    onChange={this.handleArtistChange}
+                    inputProps={{
+                      id: 'artistId',
+                      name: 'artistId',
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    {artists.map(({ id, name }) => <MenuItem key={id} value={id}>{name}</MenuItem>)}
+                  </Select>
+                  <FormHelperText component={FormHelpLink} id="name-helper-text" onClick={this.handleCreateNewArtist}>
+                    Create a new artist
+                  </FormHelperText>
+                </FormControl>
+              )}
 
-            { createNewArtist && (
-              <FormControl fullWidth>
-                <InputLabel htmlFor="artist_name">Artist Name</InputLabel>
-                <Input
-                  value={newArtistName}
-                  onChange={this.handleNewArtistNameChange}
-                  margin="dense"
-                  id="name"
-                  label="Year"
-                  type="text"
-                />
-                <FormHelperText component={FormHelpLink} id="name-helper-text" onClick={this.handleChooseExistingArtist}>
-                  Choose existing artist
-                </FormHelperText>
-              </FormControl>
-            )}
+              { createNewArtist && (
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="artist_name">Artist Name</InputLabel>
+                  <Input
+                    value={newArtistName}
+                    onChange={this.handleNewArtistNameChange}
+                    margin="dense"
+                    id="name"
+                    label="Year"
+                    type="text"
+                  />
+                  <FormHelperText component={FormHelpLink} id="name-helper-text" onClick={this.handleChooseExistingArtist}>
+                    Choose existing artist
+                  </FormHelperText>
+                </FormControl>
+              )}
 
-            <TextField
-              select
-              fullWidth
-              className={classes.selectField}
-              id="condition"
-              name="condition"
-              label="Condition"
-              value={condition || 'ok'}
-              onChange={this.handleConditionChange}
-            >
-              {this.constructor.conditionOptions.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
-            </TextField>
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={this.onRequestClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={this.handleSave} color="primary" variant="raised">
-            Save
-          </Button>
-        </DialogActions>
+              <TextField
+                select
+                fullWidth
+                className={classes.selectField}
+                id="condition"
+                name="condition"
+                label="Condition"
+                value={condition || 'ok'}
+                onChange={this.handleConditionChange}
+              >
+                {this.constructor.conditionOptions.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)}
+              </TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.onRequestClose} color="primary">
+              Cancel
+            </Button>
+            <Button color="primary" variant="raised" type="submit">
+              Save
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
     );
   }

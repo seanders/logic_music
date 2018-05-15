@@ -1,4 +1,5 @@
 class Album < ApplicationRecord
-  enum condition: [ :excellent, :ok, :bad ]
+  CONDITIONS = [ :excellent, :ok, :bad ].freeze
   belongs_to :artist
+  enum condition: CONDITIONS
 end
