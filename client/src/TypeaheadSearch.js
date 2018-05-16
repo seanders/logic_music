@@ -93,13 +93,14 @@ class AlbumSearch extends Component {
 
     const response = await musicClient.albumSearch(inputValue);
 
-    // Guard clause if no results
-    if (!response.data) { return this.setState({ suggestions: [] }); }
+    if (response.success) {
+      // Heuristic to get better albums by filtering for those that more than 100 people have
+      const popularAlbums = response.data.results.filter(a => a.barcode.length > 0 && a.community.have > 100);
 
-    // Heuristic to get better albums by filtering for those that more than 100 people have
-    const popularAlbums = response.data.results.filter(a => a.barcode.length > 0 && a.community.have > 100);
-
-    this.setState({ suggestions: popularAlbums });
+      this.setState({ suggestions: popularAlbums });
+    } else {
+      this.setState({ suggestions: [] });
+    }
   }
 
   handleSelect = (item) => {

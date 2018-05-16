@@ -46,6 +46,9 @@ chdir APP_ROOT do
   unless File.exist?('.env')
     puts "\n== Creating .env file=="
     cp '.env.example', '.env'
+    puts "========================================="
+    puts "\n== Make sure to update your `.env` file"
+    puts "========================================="
   end
 
   puts "\n== Run `foreman start -p 3000` and get the party started"
