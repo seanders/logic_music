@@ -23,7 +23,7 @@ class CreateAlbumService
       image_url: image_url
     )
 
-    if artist.errors.any?
+    if album.errors.any?
       return ServiceResult.new(success: false, errors: album.errors.full_messages.join(','))
     end
 

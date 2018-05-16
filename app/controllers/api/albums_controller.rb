@@ -20,7 +20,7 @@ class Api::AlbumsController < ApplicationController
     if result.success?
       render json: result.data
     else
-      render json: { error: result.errors }
+      render json: { error: result.errors }, status: :unprocessable_entity
     end
   end
 
@@ -35,7 +35,11 @@ class Api::AlbumsController < ApplicationController
       create_new_artist: true # Hack for now to allow discog to find/create
     ).call
 
-    render json: service_result.data
+    if service_result.success?
+      render json: service_result.data
+    else
+      render json: { error: service_result.errors }, status: :unprocessable_entity
+    end
   end
 
   def update
