@@ -7,16 +7,16 @@
 brew install yarn
 ```
 
-1. Run `setup` script
+2. Run `setup` script
 ```bash
 bin/setup
 ```
 
-1. Update `.env` with the `DISCOGS_TOKEN`
+3. Update `.env` with the `DISCOGS_TOKEN`.
 
-1. Run foreman on port 3000.
+4. Run foreman on port 3000.
 ```bash
 foreman start -p 3000
 ```
 
-1. Visit http://localhost:3000 and party on.
+5. Visit http://localhost:3000 and party on.
