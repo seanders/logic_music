@@ -1,24 +1,28 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+### Getting Started
 
-Things you may want to cover:
+1. This project needs a global install of `foreman` to run. The project says (not)[https://github.com/ddollar/foreman] to use it as a part of the gem file
+```bash
+  gem install foreman
+```
 
-* Ruby version
+1. Install `gem` dependencies
+```bash
+bundle install
+```
 
-* System dependencies
+1. Install [yarn](https://yarnpkg.com/lang/en/docs/install/#mac-stable) if you don't already have it
+```bash
+brew install yarn
+```
 
-* Configuration
+1. Install `node_modules`
+```bash
+ cd client && yarn install
+```
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+1. Run foreman on port 3000.
+```bash
+foreman start -p 3000
+```
