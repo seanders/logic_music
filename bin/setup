@@ -31,4 +31,22 @@ chdir APP_ROOT do
 
   puts "\n== Restarting application server =="
   system! 'bin/rails restart'
+
+  puts "\n== Installing foreman =="
+  system! 'gem install foreman --conservative'
+
+  unless system!('which yarn > /dev/null')
+    puts 'Yarn is needed to setup the app! See the README for info.'
+    return
+  end
+
+  puts "\n== Yarn is installing node_modules =="
+  system! 'cd client && yarn install'
+
+  unless File.exist?('.env')
+    puts "\n== Creating .env file=="
+    cp '.env.example', '.env'
+  end
+
+  puts "\n== Run `foreman start -p 3000` and get the party started"
 end
