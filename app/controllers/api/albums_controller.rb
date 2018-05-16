@@ -39,15 +39,22 @@ class Api::AlbumsController < ApplicationController
   end
 
   def update
-    @album.update(
+    album_attrs = {
       title: params[:title],
       condition: params[:condition],
       year: params[:year],
-      artist_id: params[:artistId]
-    )
+    }
+
+    if creating_new_artist?
+      album_attrs[:artist_id] = Artist.where(name: params[:newArtistName]).first_or_create.id
+    else
+      album_attrs[:artist_id] = params[:artistId]
+    end
+
+    @album.update(album_attrs)
 
     if @album.errors.any?
-      render json: { errors: @albums.errors.full_messages.join(', ')}, status: :unprocessable_entity
+      render json: { errors: @album.errors.full_messages.join(', ')}, status: :unprocessable_entity
     else
       render json: @album
     end

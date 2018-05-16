@@ -7,6 +7,8 @@ class DiscogsClient
     if result.message && result.message == invalid_token_message
       raise invalid_token_message
     end
+
+    result
   end
 
   def find_album(id:)

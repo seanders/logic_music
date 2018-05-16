@@ -118,12 +118,12 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Greg's hipster album paradise. Get searching...</h1>
+          <h1 className="App-title">Greg's hipster album paradise. Start searching...</h1>
           <TypeaheadSearch onSelect={this.saveDiscogAlbum}/>
-          <h1 className="App-title">or manually add one</h1>
+          <h1 className="App-title">or manually</h1>
           <Button variant="raised" color="primary" onClick={this.onAddAlbumClick}>
-            Add Album
             <AddIcon />
+            Add Album
           </Button>
         </header>
         <div style={{ display: 'flex' }}>
