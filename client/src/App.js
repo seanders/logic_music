@@ -50,7 +50,7 @@ class App extends Component {
   }
 
   closeModal() {
-    this.setState({ showAlbumUpsertModal: false });
+    this.setState({ showAlbumUpsertModal: false, selectedAlbumId: null });
   }
 
   onAddAlbumClick = () => {
