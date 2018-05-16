@@ -13,7 +13,7 @@ class DiscogsClient
 
   def discogs_client
     # TODO: Make this env variable
-    @_discogs_client ||= Discogs::Wrapper.new("wtf", user_token: 'jNwDjmeilCUiJethKFZFCIUKZGquHgFOLzovtpwJ')
+    @_discogs_client ||= Discogs::Wrapper.new("wtf", user_token: ENV['DISCOGS_TOKEN'])
   end
 
   def extract_album_attributes(release:)

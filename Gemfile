@@ -41,3 +41,4 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'discogs-wrapper'
 gem 'active_model_serializers'
+gem 'dotenv-rails', groups: [:development, :test]

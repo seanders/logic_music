@@ -54,6 +54,10 @@ GEM
       hashie (~> 3.0)
       httparty (~> 0.14)
       oauth (~> 0.5.1)
+    dotenv (2.2.1)
+    dotenv-rails (2.2.1)
+      dotenv (= 2.2.1)
+      railties (>= 3.2, < 5.2)
     erubis (2.7.0)
     ffi (1.9.23)
     globalid (0.4.1)
@@ -140,6 +144,7 @@ DEPENDENCIES
   active_model_serializers
   byebug
   discogs-wrapper
+  dotenv-rails
   listen (~> 3.0.5)
   puma (~> 3.0)
   rails (~> 5.0.7)
