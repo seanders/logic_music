@@ -1,5 +1,7 @@
 class AlbumSerializer < ActiveModel::Serializer
-  attributes :id, :title, :year, :condition, :artistId
+  attributes :id, :title, :year, :condition, :artistId, :imageUrl
+
+  belongs_to :artist
 
   def artistId
     object.artist_id
@@ -11,5 +13,9 @@ class AlbumSerializer < ActiveModel::Serializer
 
   def updatedAt
     object.updated_at
+  end
+
+  def imageUrl
+    object.image_url
   end
 end

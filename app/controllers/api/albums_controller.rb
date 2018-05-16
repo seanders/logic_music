@@ -8,27 +8,34 @@ class Api::AlbumsController < ApplicationController
   end
 
   def create
-    artist = if creating_new_artist?
-      Artist.create(name: params[:newArtistName])
-    else
-      Artist.find(params[:artistId])
-    end
-
-    if artist.errors.any?
-      return render json: { error: artist.errors.full_messages.join(',') }, status: :unprocessable_entity
-    end
-
-    album = artist.albums.create(
+    result = CreateAlbumService.new(
+      artist_id: params[:artistId],
+      new_artist_name: params[:newArtistName],
+      create_new_artist: params[:createNewArtist],
       title: params[:title],
-      condition: params[:condition],
-      year: params[:year]
-    )
+      year: params[:year],
+      condition: params[:condition]
+    ).call
 
-    if album.errors.any?
-      return render json: { error: album.errors.full_messages.join(',') }, status: :unprocessable_entity
+    if result.success?
+      render json: result.data
+    else
+      render json: { error: result.errors }
     end
+  end
 
-    render json: album
+  def create_by_discogs
+    album_attrs = DiscogsClient.new.find_album(id: params[:discogs_album_id])
+
+    service_result = CreateAlbumService.new(
+      image_url: album_attrs[:image_url],
+      title: album_attrs[:title],
+      year: album_attrs[:year],
+      new_artist_name: album_attrs[:artist_name],
+      create_new_artist: true # Hack for now to allow discog to find/create
+    ).call
+
+    render json: service_result.data
   end
 
   def update

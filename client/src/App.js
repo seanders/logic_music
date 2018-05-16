@@ -8,6 +8,7 @@ import ArtistList from './ArtistList';
 import AlbumsList from './AlbumsList';
 import UpsertAlbumDialog from './UpsertAlbumDialog';
 import ArtistProlificnessChart from './ArtistProlificnessChart';
+import TypeaheadSearch from './TypeaheadSearch';
 
 class App extends Component {
   constructor(props) {
@@ -15,7 +16,7 @@ class App extends Component {
 
     this.state = {
       showAlbumUpsertModal: false,
-      artists: [],
+      artists: {},
       selectedArtistId: null,
       selectedAlbumId: null,
       albums: {},
@@ -32,8 +33,9 @@ class App extends Component {
       throw new Error('Failed to fetch initial data');
     }
 
+    // Normalize data
     this.setState({
-      artists,
+      artists: artists.reduce((result, album) => ({...result, [album.id]: album}), {}),
       albums: albums.reduce((result, album) => ({...result, [album.id]: album}), {}),
       selectedArtistId: artists[0] && artists[0].id, // On initialization, we'll just select the first artist (if present)
     });
@@ -70,10 +72,22 @@ class App extends Component {
     if (response.success) {
       this.setState((prevState) => ({
         albums: { ...prevState.albums, [album.id]: album },
+        artists: { ...prevState.artists, [album.artist.id]: album.artist }
       }));
     }
 
     return response;
+  }
+
+  saveDiscogAlbum = async (discogsAlbum) => {
+    const response = await musicClient.createAlbumFromDiscogs(discogsAlbum.id);
+    const album = response.data;
+    if (response.success) {
+      this.setState((prevState) => ({
+        albums: { ...prevState.albums, [album.id]: album },
+        artists: { ...prevState.artists, [album.artist.id]: album.artist }
+      }));
+    }
   }
 
   destroyAlbum = async (albumId) => {
@@ -96,14 +110,17 @@ class App extends Component {
   }
 
   render() {
-    const { artists, selectedArtistId, albums, showAlbumUpsertModal, selectedAlbumId, highlightedYear } = this.state;
+    const { artists: artistsMap, selectedArtistId, albums, showAlbumUpsertModal, selectedAlbumId, highlightedYear } = this.state;
+    const artists = Object.values(artistsMap);
 
     const albumsForSelectedArtist = Object.values(albums).filter(album => album.artistId === selectedArtistId);
 
     return (
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">Greg's hipster album paradise.</h1>
+          <h1 className="App-title">Greg's hipster album paradise. Get searching...</h1>
+          <TypeaheadSearch onSelect={this.saveDiscogAlbum}/>
+          <h1 className="App-title">or manually add one</h1>
           <Button variant="raised" color="primary" onClick={this.onAddAlbumClick}>
             Add Album
             <AddIcon />

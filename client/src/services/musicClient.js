@@ -7,13 +7,13 @@ const baseConfig = {
 }
 
 function baseFetch(path, config = {}) {
-  return fetch(`${baseUrl}${path}`, { ...baseConfig, ...config }).
-          then(async (resp) => {
+  return fetch(`${baseUrl}${path}`, { ...baseConfig, ...config })
+          .then(async (resp) => {
             const text = await resp.text();
             const data = text ? JSON.parse(text) : null;
             return { success: resp.status >= 200 && resp.status < 300, data };
-          }).
-          then(json => json);
+          })
+          .then(json => json);
 }
 
 export async function getArtists() {
@@ -39,9 +39,27 @@ export async function destroyAlbum(id) {
   });
 }
 
+export async function albumSearch(artistName) {
+  return baseFetch(`/search`, {
+    method: 'POST',
+    body: JSON.stringify({ artist_name: artistName })
+  })
+}
+
+export async function createAlbumFromDiscogs(discogAlbumId) {
+  return baseFetch(`/albums/create_by_discogs`, {
+    method: 'POST',
+    body: JSON.stringify({
+      discogs_album_id: discogAlbumId,
+    }),
+  })
+}
+
 export default {
   getArtists,
   getAlbums,
   upsertAlbum,
   destroyAlbum,
+  albumSearch,
+  createAlbumFromDiscogs,
 }
